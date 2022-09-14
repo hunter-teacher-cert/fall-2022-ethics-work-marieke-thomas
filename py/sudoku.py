@@ -1,3 +1,9 @@
+# sudoku.py
+# Marieke Thomas
+# CSCI 77800 Fall 2022
+# collaborators: Jeff Olsen
+# consulted:https://www.websudoku.com/?select=1&level=3, puzzle # 4,575,577,303 (source of sudoku puzzles)
+
 import puzzle_book
 import random
 puzzle = puzzle_book.flatten_puzzle(puzzle_book.evil_puzzle)
