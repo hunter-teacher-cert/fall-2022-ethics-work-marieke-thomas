@@ -6,6 +6,7 @@ Marieke A. Thomas
 Marieke Alani Thomas
 M. A. Thomas
 J.K. Rowling
+Ms. Thomas
 
 Everything below is not a name, just here to test that the program isn't accidentally capturing stray non-names
 not a name
