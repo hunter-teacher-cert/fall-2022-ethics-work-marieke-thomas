@@ -1,13 +1,15 @@
 """This program simulates the sales of tickets for a specific flight.
 
 A plane is represented by a list. Each element of the list is a row in
-the plane (with plane[0] being the front) and reach row is also a
+the plane (with plane[0] being the front) and each row is also a
 list.
 
 Seats can be purchased as economy_plus or regular economy.
 
 Economy_plus passengers select their seats when they purchase their tickts.
-Economy passengers are assigned randomly when the flight is closer to full
+Economy passengers are assigned randomly when the flight is closer to full.
+
+New: Economy passengers who book as a group will be seated together if possible.
 
 create_plane(rows,cols):
   Creates and returns a plane of size rowsxcols
@@ -105,7 +107,7 @@ def get_number_economy_sold(economy_sold):
 
 def get_avail_seats(plane, economy_sold):
     """
-    Parameters: plane : a list of lists representing plaine
+    Parameters: plane : a list of lists representing plane
                 economy_sold : a dictionary of the economy seats sold but not necessarily assigned
 
     Returns: the number of unsold seats
@@ -193,28 +195,75 @@ def purchase_economy_plus(plane, economy_sold, name):
     return plane
 
 
-# THIS WILL BE LEFT EMPTY FOR THE FIRST STAGE OF THE PROJECT
-def seat_economy(plane, economy_sold, name):
-    """
-    This is mostly the same as the purchase_economy_plus routine but 
-    just does the random assignment. 
+# # THIS WILL BE LEFT EMPTY FOR THE FIRST STAGE OF THE PROJECT
+# def seat_economy(plane, economy_sold, name):
+#     """
+#     This is mostly the same as the purchase_economy_plus routine but 
+#     just does the random assignment. 
 
-    We use this when we're ready to assign the economy seats after most 
-    of the economy plus seats are sold
+#     We use this when we're ready to assign the economy seats after most 
+#     of the economy plus seats are sold
 
  
-    """
-    rows = len(plane)
-    cols = len(plane[0])
+#     """
+#     rows = len(plane)
+#     cols = len(plane[0])
 
-    found_seat = False
-    while not (found_seat):
-        r_row = random.randrange(0, rows)
-        r_col = random.randrange(0, cols)
-        if plane[r_row][r_col] == "win" or plane[r_row][r_col] == "avail":
-            plane[r_row][r_col] = name
-            found_seat = True
-    return plane
+#     found_seat = False
+#     while not (found_seat):
+#         r_row = random.randrange(0, rows)
+#         r_col = random.randrange(0, cols)
+#         if plane[r_row][r_col] == "win" or plane[r_row][r_col] == "avail":
+#             plane[r_row][r_col] = name
+#             found_seat = True
+#     return plane
+
+def seat_economy_groups(plane, economy_list):
+  for group in economy_list:
+    print("seating group " + group[0])
+    plane = seat_one_group(plane, group)
+    print("current plane is:")
+    print(get_plane_string(plane))
+
+    # If the group can't sit together, try to sit n-1 of them together
+  return plane
+
+def seat_one_group(plane, group):
+  seats_needed = group[1]
+  rows = len(plane)
+  cols = len(plane[0])
+  found_seats = False
+  for row_num in range(rows):
+    for col_num in range(cols-seats_needed+1):
+      found_seats= True
+      for num in range(seats_needed):
+        found_seats *= check_seat(plane, row_num, col_num+num)
+        # print("found_seats value is " + str(found_seats))
+        if found_seats == 0:
+          break
+      if found_seats == True:
+        print("found " + str(seats_needed) + " seats together at " + str(row_num) + str(col_num))
+        for num in range(seats_needed):
+          plane[row_num][col_num+num] = group[0]
+        return plane
+  # If we get to this point without returning, it means the plane doesn't have enough adjacent seats to sit the group
+  print("Unable to seat the group together")
+  return plane
+
+def check_seat(plane, r, c):
+  # print("Is there a seat at %s %s" %(str(r), str(c)))
+  # print(plane[r][c] == "win" or plane[r][c] == "avail")
+  return plane[r][c] == "win" or plane[r][c] == "avail"
+
+def second_item(tuple):
+  return tuple[1]
+
+def sort_largest_group(economy_sold):
+  """Takes the dictionary of economy orders and turns it into a list of tuples, then sorts the list by descending number of tickets so that the largest groups are listed first"""
+  economy_list = list(economy_sold.items())
+  economy_list.sort(key=second_item, reverse=True) 
+  print(economy_list)
+  return (economy_list)
 
 
 def purchase_economy_block(plane, economy_sold, number, name):
@@ -271,15 +320,20 @@ def fill_plane(plane):
     # seats to the economy plus passengers
     # you will have to complete the seat_economy function
     # Alternatively you can rewrite this section
-    for name in economy_sold.keys():
-        for i in range(economy_sold[name]):
-            plane = seat_economy(plane, economy_sold, name)
+
+    economy_sorted = sort_largest_group(economy_sold)
+
+    plane = seat_economy_groups(plane, economy_sorted)
+
+    # for name in economy_sold.keys():
+    #     for i in range(economy_sold[name]):
+    #         plane = seat_economy(plane, economy_sold, name)
 
     return plane
 
 
 def main():
-    plane = create_plane(10, 5)
+    plane = create_plane(7, 5)
     plane = fill_plane(plane)
     print(get_plane_string(plane))
 
