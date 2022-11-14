@@ -221,14 +221,15 @@ def purchase_economy_plus(plane, economy_sold, name):
 def seat_economy_groups(plane, economy_list):
   for group in economy_list:
     print("seating group " + group[0])
-    plane = seat_one_group(plane, group)
+    plane = seat_one_group(plane, group, economy_list)
+    print(economy_list)
     print("current plane is:")
     print(get_plane_string(plane))
 
     # If the group can't sit together, try to sit n-1 of them together
   return plane
 
-def seat_one_group(plane, group):
+def seat_one_group(plane, group, economy_list):
   seats_needed = group[1]
   rows = len(plane)
   cols = len(plane[0])
@@ -248,12 +249,22 @@ def seat_one_group(plane, group):
         return plane
   # If we get to this point without returning, it means the plane doesn't have enough adjacent seats to sit the group
   print("Unable to seat the group together")
+  # Split the group into two smaller groups and seat those instead (groups are split in half rather than shrinking by one so that a group of 4 would split into two pairs-- I think this has the best chance of keeping passengers happy)
+  # This is slightly messy since the split groups get appended into the list but the earlier booking with the full group isn't removed. It would probably be better to remove the original group from economy_list, but that messes up the for loop. To fix, the for loop would need to be done by index and you could subtract one from the index after removing the original group 
+  economy_list.append((group[0], group[1]//2 + group[1]%2))
+  economy_list.append((group[0], group[1]//2))
+  # Reorder the list so that it's in order by descending group size but then for groups that have the same #, it's ordered alphabetically (which means the groups that booked earlier come first)
+  economy_list.sort(key=first_item, reverse=False)
+  economy_list.sort(key=second_item, reverse=True)
   return plane
 
 def check_seat(plane, r, c):
   # print("Is there a seat at %s %s" %(str(r), str(c)))
   # print(plane[r][c] == "win" or plane[r][c] == "avail")
   return plane[r][c] == "win" or plane[r][c] == "avail"
+
+def first_item(tuple):
+  return tuple[0]
 
 def second_item(tuple):
   return tuple[1]
@@ -273,8 +284,10 @@ def purchase_economy_block(plane, economy_sold, number, name):
     economy_sold dictionary and return the new dictionary
 
     """
-    seats_avail = get_total_seats(plane)
-    seats_avail = seats_avail - get_number_economy_sold(economy_sold)
+    seats_avail = get_avail_seats(plane, economy_sold)
+    # seats_avail = seats_avail - get_number_economy_sold(economy_sold)
+
+    # print("seats available: " + str(seats_avail))
 
     if seats_avail >= number:
         economy_sold[name] = number
@@ -305,16 +318,21 @@ def fill_plane(plane):
     max_family_size = 3
     while total_seats > 1:
         r = random.randrange(100)
-        if r > 30:
-            plane = purchase_economy_plus(plane, economy_sold,
+        if r > 20:
+          plane = purchase_economy_plus(plane, economy_sold,
                                           "ep-%d" % ep_number)
-            ep_number = ep_number + 1
-            total_seats = get_avail_seats(plane, economy_sold)
+          ep_number = ep_number + 1
+          total_seats = get_avail_seats(plane, economy_sold)
+          # print("purchasing economy plus ticket")
+          # print("total seats avail: " + str(total_seats))
         else:
             economy_sold = purchase_economy_block(
                 plane, economy_sold, 1 + random.randrange(max_family_size),
                 "u-%d" % u_number)
             u_number = u_number + 1
+            total_seats = get_avail_seats(plane, economy_sold)
+            # print("purchasing economy tickets")
+            # print("total seats avail: " + str(total_seats))
 
     # once the plane reaches a certian seating capacity, assign
     # seats to the economy plus passengers
