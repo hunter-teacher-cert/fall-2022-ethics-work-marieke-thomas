@@ -1,0 +1,90 @@
+
+
+p, ol, li {
+  font-size: 18px;
+}
+
+.box {
+  margin: 50px 10px;
+  padding: 60px;
+  background-color: #e8f0ff;
+}
+
+.intro {
+    text-align: center;
+  margin: 60px 10px;
+}
+
+.info {
+    background-color: #f7e8ff;
+}
+
+.ex1 {
+    background-color: #e8fff1;
+}
+
+.ex2 {
+    background-color: #e8fff1;
+}
+
+.navbar{
+  position: fixed;
+  top:0;
+  left:0;
+  width: 100%;
+  overflow:hidden;
+  background-color: #7d7d7d;
+  height: 50px;
+}
+
+.navbar a{
+  font-size: 18px;
+  color: white;
+  padding: 5px 30px;
+  text-decoration:none;
+  display: inline-block;
+}
+
+.navbar a:hover {
+  background: #616161;
+}
+
+#serena-pic, #jimin-pic, #bruno-pic, #kate-pic {
+  width: 200px;
+}
+
+#ex-header {
+  text-align: center;
+}
+
+#title, .row {
+  text-align: center;
+}
+
+.button-color {
+
+  background-color: #e6e6e6;
+  border: solid;
+  border-width: 2px;
+  border-color: #5c5c5c #000 #000 #5c5c5c;
+  
+}
+
+.button-color:hover {
+
+  background-color: #c2c2c2;
+  border: solid;
+  border-width: 2px;
+  border-color: #5c5c5c #000 #000 #5c5c5c;
+}
+
+.citation {
+  background-color: #e6e6e6;
+}
+
+.cent-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
