@@ -226,7 +226,6 @@ def seat_economy_groups(plane, economy_list):
     print("current plane is:")
     print(get_plane_string(plane))
 
-    # If the group can't sit together, try to sit n-1 of them together
   return plane
 
 def seat_one_group(plane, group, economy_list):
